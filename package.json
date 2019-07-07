@@ -6,8 +6,7 @@
   "scripts": {
     "develop": "yarn run clean && gatsby develop",
     "build": "yarn run clean && gatsby build",
-    "deploy": "yarn run clean && gatsby build --prefix-paths && gh-pages -d public",
-    "clean": "rimraf .cache public",
+    "deploy": "yarn run clean && gatsby build && gh-pages -d public -b master",    "clean": "rimraf .cache public",
     "flow": "flow",
     "flow-typed": "flow-typed install",
     "lint:js": "eslint --cache --ext .js,.jsx .",
