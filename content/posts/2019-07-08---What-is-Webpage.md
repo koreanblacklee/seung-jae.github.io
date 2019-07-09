@@ -8,15 +8,14 @@ category: "Blog"
 tags:
   - "Wework"
   - "Python"
-  - "github blog"
+  - "gatsby blog"
 description: "웹사이트의 발전과정"
 ---
 
+(읽기 쉽고, 쉽게 표현하기 위해 경어를 사용한 점 양해부탁드립니다.)
+#Gatsby 블로그 준비 - 1 웹사이트의 발전과정
 
-
-#Gatsby 
-
-Gatsby를 알기전에 먼저 웹사이트의 발전 과정부터 간단하게 집고 넘어가보자.
+Gatsby를 알기전에 먼저 현재 이용하고 있는 웹사이트가 어떤 발전과정을 겪었는지 알아보자. 
 
 
 ##1세대 웹사이트(동적)
