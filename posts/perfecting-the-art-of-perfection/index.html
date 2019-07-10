@@ -53,14 +53,14 @@
       </script><link rel="sitemap" type="application/xml" href="/sitemap.xml"/><link rel="shortcut icon" href="/icons/icon-48x48.png?v=b122a9508eac2fcbe7e615c8fe8ec7af"/><link rel="manifest" href="/manifest.webmanifest"/><meta name="theme-color" content="#F7A046"/><link rel="apple-touch-icon" sizes="48x48" href="/icons/icon-48x48.png?v=b122a9508eac2fcbe7e615c8fe8ec7af"/><link rel="apple-touch-icon" sizes="72x72" href="/icons/icon-72x72.png?v=b122a9508eac2fcbe7e615c8fe8ec7af"/><link rel="apple-touch-icon" sizes="96x96" href="/icons/icon-96x96.png?v=b122a9508eac2fcbe7e615c8fe8ec7af"/><link rel="apple-touch-icon" sizes="144x144" href="/icons/icon-144x144.png?v=b122a9508eac2fcbe7e615c8fe8ec7af"/><link rel="apple-touch-icon" sizes="192x192" href="/icons/icon-192x192.png?v=b122a9508eac2fcbe7e615c8fe8ec7af"/><link rel="apple-touch-icon" sizes="256x256" href="/icons/icon-256x256.png?v=b122a9508eac2fcbe7e615c8fe8ec7af"/><link rel="apple-touch-icon" sizes="384x384" href="/icons/icon-384x384.png?v=b122a9508eac2fcbe7e615c8fe8ec7af"/><link rel="apple-touch-icon" sizes="512x512" href="/icons/icon-512x512.png?v=b122a9508eac2fcbe7e615c8fe8ec7af"/><title data-react-helmet="true">pyJWT를 이용한 Python Django Login Decorator - Blog by John Doe</title><meta data-react-helmet="true" name="description" content="Python3 pyJWT를 이용한 파이썬 로그인 데코레이터 구현"/><meta data-react-helmet="true" property="og:site_name" content="pyJWT를 이용한 Python Django Login Decorator - Blog by John Doe"/><meta data-react-helmet="true" name="twitter:card" content="summary"/><meta data-react-helmet="true" name="twitter:title" content="pyJWT를 이용한 Python Django Login Decorator - Blog by John Doe"/><link as="script" rel="preload" href="/webpack-runtime-2e0d6024b373bdbb5ee5.js"/><link as="script" rel="preload" href="/app-72c10f2c766d80707ed1.js"/><link as="script" rel="preload" href="/styles-917d909a3f44ed6bc2e3.js"/><link as="script" rel="preload" href="/1-5dc0f478dda5f6e69181.js"/><link as="script" rel="preload" href="/2-31b556bc2b9ce7d4a85e.js"/><link as="script" rel="preload" href="/component---src-templates-post-template-js-9f8c629fe9d1bfc41940.js"/><link as="fetch" rel="preload" href="/page-data/posts/perfecting-the-art-of-perfection/page-data.json" crossorigin="use-credentials"/></head><body><noscript id="gatsby-noscript">This app works best with JavaScript enabled.</noscript><div id="___gatsby"><div style="outline:none" tabindex="-1" role="group" id="gatsby-focus-wrapper"><div class="Layout-module--layout--3Pyz6"><div><a class="Post-module--post__home-button--16Kl0" href="/">All Articles</a><div><div class="Content-module--content--3p512"><h1 class="Content-module--content__title--2BDW9">pyJWT를 이용한 Python Django Login Decorator</h1><div class="Content-module--content__body--2TrQ-"><p>(읽기 쉽고, 쉽게 표현하기 위해 경어를 사용한 점 양해부탁드립니다.)</p>
 <p>며칠동안 전전긍긍하던 파이썬 로그인 데코레이터를 완료하였고, 구현하는 과정 및 결과에 대해 포스팅 해보려 한다. 개발을 배우는 입장에서 정리를 하다보니 부족한 부분이 있을 수 있으니 양해바란다.</p>
 <p><img src="/media/image-2.jpg" alt="Nulla faucibus vestibulum eros in tempus. Vestibulum tempor imperdiet velit nec dapibus"></p>
-<p>데코레이터 구현을 위해 인터넷을 계속 찾아다녀봤지만, pyJWT를 이용한 구현은 찾아보기가 힘들었고, 오늘 배운것을 정리하는 것과 pyJWT를 이용한 인증구현이 필요한 사람을 위해 정리하려 한다.  </p>
-<p>JWT는<br>
+<p>데코레이터 구현을 위해 인터넷을 계속 찾아다녀봤지만, pyJWT를 이용한 구현은 찾아보기가 힘들었고, 오늘 배운것을 정리하는 것과 pyJWT를 통한 인증구현이 필요한 사람을 위해 정리하려 한다.  </p>
+<p>먼저 JWT는,<br>
 JavaScript를 이용해 유저가 웹사이트에 로그인 한 후에 발생하는 이벤트(댓글, 게시판 글쓰기 등), 여러가지 서비스를 이용하기 위한 권한을 가진 유저인지 확인하기 위해서 많이 쓰이고 있다고 한다.
 총 3개의 구문으로 되어있고, 헤더.내용.서명 으로 이루어져 있다.
 (자세한 내용은 <a href="https://jwt.io/">JWT</a>공식홈페이지나 다른 사이트를 참고해주길 바란다.)</p>
 <p>혹여나 데코레이터가 뭔지 모르는 분들을 위해 설명드리자면,<br>
 대상 함수를 wrapping하고, 이 함수 앞뒤로 꾸며질 구문들에 대해 손쉽게 재사용할 수 있도록 다른 곳에 미리 함수를 만들어 둔 것이라고만 알고 있으면 될 듯 하다. 이번 프로젝트를 예로 들자면, 회원이 댓글작성이나 특정권한을 가지고 있는지 확인하기 위해 데코레이터를 구현했다.<br>
-사용예시</p>
+ex)사용예시</p>
 <div class="gatsby-highlight" data-language="text"><pre class="language-text"><code class="language-text">@decorator
 def comment:
   ~~~</code></pre></div>
@@ -80,35 +80,74 @@ def comment:
 <li>request할 객체에 user변수를 저장하여 프론트엔드에게 전달</li>
 <li>위 내용이 잘 실행되는지 httpie나 다른 방법으로 테스트 및 검증진행</li>
 </ol>
+<p>더 자세한 사항은 코드 밑에 써두도록 하겠다.  </p>
 <h3 id="코딩-순서"><a href="#%EC%BD%94%EB%94%A9-%EC%88%9C%EC%84%9C" aria-label="코딩 순서 permalink" class="anchor"><svg aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>코딩 순서</h3>
 <p>(세부로직 순서에 맞게 작성)</p>
 <ol start="0">
 <li>pyJWT설치
 <code class="language-text">pip install pyJWT</code> 및 django app디렉토리에서 utils.py 파일 생성</li>
-<li>
-<p>데코레이터 구현 및 해당 유저 정보 확인</p>
+</ol>
 <div class="gatsby-highlight" data-language="text"><pre class="language-text"><code class="language-text">def login_decorator(func):
-def wrapper(self, request, *args, **kwargs):
-if &quot;Authorization&quot; not in request.headers:
-  return JsonResponse({&quot;error_code&quot;:&quot;INVALID_LOGIN&quot;}, status=401)</code></pre></div>
-<p>=> 데코레이터를 만들기 위해 다중 함수 구현, 받은 데이터 중에 토큰이 있는지 if문을 통해 확인
-=> 401에러는 권한이 없을 때 발생</p>
-</li>
-<li>jwt토큰 decode
-<code class="language-text">data = jwt.decode(encode_token, secret_key, algorithm=&#39;HS256&#39;)</code><br>
+
+    def wrapper(self, request, *args, **kwargs): # self &gt; 받아온 함수를 다시 넘긴다 access token이 헤더에 들어있음&gt; json.load가 아님(헤더에 있는 값만 할 것임) &gt; 키 벨류로 돼있는 양식 &gt; 
+    
+        if &quot;Authorization&quot; not in request.headers: #1)번
+            return JsonResponse({&quot;error_code&quot;:&quot;INVALID_LOGIN&quot;}, status=401)
+        
+        encode_token = request.headers[&quot;Authorization&quot;] 
+
+        try:
+            data = jwt.decode(encode_token, wef_key, algorithm=&#39;HS256&#39;) 
+            #2번)decode를 하게 될 경우 프론트엔드에 전달했던 페이로드값만 나옴(즉 로그인뷰에 바디)
+
+            user = User.objects.get(id = data[&quot;id&quot;])#3번
+            request.user = user #4번
+        except jwt.DecodeError: #2-1번 error
+            return JsonResponse({
+                &quot;error_code&quot; : &quot;INVALID_TOKEN&quot;
+            }, status = 401) # 401에러 : 권한이 없을때 발생
+        except User.DoesNotExist:#1-1번 error
+            return JsonResponse({
+                &quot;error_code&quot; : &quot;UNKNOWN_USER&quot;
+            }, status = 401) # 401에러 : 권한이 없을때 발생
+
+        return func(self, request, *args, **kwargs) #5번
+
+    return wrapper</code></pre></div>
+<ol>
+<li>데코레이터 구현 및 해당 유저 정보 확인
+=> 데코레이터를 만들기 위해 다중 함수 구현, 받은 데이터 중에 토큰이 있는지 if문을 통해 확인
+=> 401에러는 권한이 없을 때 발생</li>
+<li>jwt토큰 decode<br>
 => 받은 토큰과 기존에 저장해두었던 SECRET_KEY와 algorithm으로 토큰을 decode
 => decode를 하게 될 경우 프론트엔드에 전달했던 페이로드값만 나옴(즉 로그인뷰에 바디)</li>
 <li>decode한 토큰과 일치하는 유저 정보를 변수에 저장
-<code class="language-text">user = User.objects.get(id = data[&quot;id&quot;])</code>
 =>Query문을 이용해 DB에 접근하여 원하는 데이터를 가져온다
 =>get메소드를 사용할 경우 DB에서 하나의 row만 가지고 옴(가로)</li>
 <li>프론트엔드에게 받은 request.user에 3번의 자료 저장
-<code class="language-text">request.user = user</code>
 =>프론트엔드에게 전달해주기 전 준비과정</li>
-<li>4번에 저장된 request를 데코레이터 리턴
-<code class="language-text">return func(self, request, *args, **kwargs)</code><br>
-<code class="language-text">return wrapper</code>
+<li>4번에 저장된 request를 데코레이터 리턴<br>
 => 데코레이터종료 및 프론트엔드에게 해당 유저의 정보를 리턴</li>
+<li>테스트할 변수를 views.py에 테스트변수 만들고, urls를 통해 url을 연결한 후  결과가 잘 나오는지 확인  </li>
 </ol>
+<p><code class="language-text">pip install httpie</code>
+=>views.py에 아래 코드 입력, urls.py에 </p>
+<div class="gatsby-highlight" data-language="text"><pre class="language-text"><code class="language-text">#user/views.py
+from user.utils import login_decorator  
+
+class Example(View):
+    @login_decorator
+    def get(self, request):
+        user = User.objects.get(id = 11)
+        return JsonResponse({
+            &#39;user_name&#39;    : user.name            
+        })
+
+#user/urls.py
+from .views import Example
+
+urlpatterns = [
+    path(&#39;/a&#39;, Example.as_view())
+    ]</code></pre></div>
 <h2 id="결론"><a href="#%EA%B2%B0%EB%A1%A0" aria-label="결론 permalink" class="anchor"><svg aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>결론</h2>
 <p>어떻게 보면 정말 간단한 함수처럼 보이지만 이제 막 개발을 시작하거나 데코레이터를 실전(?)에서 어떻게 써야 하는지 위 자료를 토대로 조금이나마 도움이 됐으면 합니다.</p></div></div></div><div class="Post-module--post__footer--3WzWU"><div><p class="Meta-module--meta__date--29eD7">Published <!-- -->11 Jul 2019</p></div><div class="Tags-module--tags--1L_ct"><ul class="Tags-module--tags__list--91FqN"><li class="Tags-module--tags__list-item--1M30P"><a class="Tags-module--tags__list-item-link--3SL_8" href="/tag/python-3/">Python3</a></li><li class="Tags-module--tags__list-item--1M30P"><a class="Tags-module--tags__list-item-link--3SL_8" href="/tag/wecode/">Wecode</a></li><li class="Tags-module--tags__list-item--1M30P"><a class="Tags-module--tags__list-item-link--3SL_8" href="/tag/django/">Django</a></li></ul></div><div class="Author-module--author--2Yefr"><p>Pellentesque odio nisi, euismod in, pharetra a, ultricies in, diam. Sed arcu.<a class="Author-module--author__bio-twitter--n-O9n" href="https://www.twitter.com/#" rel="noopener noreferrer" target="_blank"><strong>John Doe</strong> on Twitter</a></p></div></div><div class="Post-module--post__comments--25y6I"></div></div></div></div></div><script id="gatsby-script-loader">/*<![CDATA[*/window.pagePath="/posts/perfecting-the-art-of-perfection/";window.webpackCompilationHash="2e55fb44585176c743ac";/*]]>*/</script><script id="gatsby-chunk-mapping">/*<![CDATA[*/window.___chunkMapping={"app":["/app-72c10f2c766d80707ed1.js"],"component---node-modules-gatsby-plugin-offline-app-shell-js":["/component---node-modules-gatsby-plugin-offline-app-shell-js-7f2fa9be3a21f9751c02.js"],"component---src-templates-not-found-template-js":["/component---src-templates-not-found-template-js-3b8fc141d49e513c9b37.js"],"component---src-templates-tags-list-template-js":["/component---src-templates-tags-list-template-js-78300358901183faaffb.js"],"component---src-templates-categories-list-template-js":["/component---src-templates-categories-list-template-js-51d4b645cf707b84ac64.js"],"component---src-templates-page-template-js":["/component---src-templates-page-template-js-61efaf468cf9349c79b1.js"],"component---src-templates-post-template-js":["/component---src-templates-post-template-js-9f8c629fe9d1bfc41940.js"],"component---src-templates-tag-template-js":["/component---src-templates-tag-template-js-dcab0993f1559e13fddb.js"],"component---src-templates-category-template-js":["/component---src-templates-category-template-js-58ea5390dbaf2180586e.js"],"component---src-templates-index-template-js":["/component---src-templates-index-template-js-6a574c58fa877305e56a.js"]};/*]]>*/</script><script src="/component---src-templates-post-template-js-9f8c629fe9d1bfc41940.js" async=""></script><script src="/2-31b556bc2b9ce7d4a85e.js" async=""></script><script src="/1-5dc0f478dda5f6e69181.js" async=""></script><script src="/styles-917d909a3f44ed6bc2e3.js" async=""></script><script src="/app-72c10f2c766d80707ed1.js" async=""></script><script src="/webpack-runtime-2e0d6024b373bdbb5ee5.js" async=""></script></body></html>

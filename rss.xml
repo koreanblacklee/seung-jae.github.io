@@ -1,14 +1,14 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Blog by John Doe]]></title><description><![CDATA[Pellentesque odio nisi, euismod in, pharetra a, ultricies in, diam. Sed arcu.]]></description><link>http://seung-jae.github.io/</link><generator>RSS for Node</generator><lastBuildDate>Tue, 09 Jul 2019 17:35:36 GMT</lastBuildDate><item><title><![CDATA[pyJWT를 이용한 Python Django Login Decorator]]></title><description><![CDATA[Python3 pyJWT를 이용한 파이썬 로그인 데코레이터 구현]]></description><link>http://seung-jae.github.io//posts/perfecting-the-art-of-perfection/</link><guid isPermaLink="false">http://seung-jae.github.io//posts/perfecting-the-art-of-perfection/</guid><pubDate>Wed, 10 Jul 2019 23:46:37 GMT</pubDate><content:encoded>&lt;p&gt;(읽기 쉽고, 쉽게 표현하기 위해 경어를 사용한 점 양해부탁드립니다.)&lt;/p&gt;
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Blog by John Doe]]></title><description><![CDATA[Pellentesque odio nisi, euismod in, pharetra a, ultricies in, diam. Sed arcu.]]></description><link>http://seung-jae.github.io/</link><generator>RSS for Node</generator><lastBuildDate>Wed, 10 Jul 2019 00:41:36 GMT</lastBuildDate><item><title><![CDATA[pyJWT를 이용한 Python Django Login Decorator]]></title><description><![CDATA[Python3 pyJWT를 이용한 파이썬 로그인 데코레이터 구현]]></description><link>http://seung-jae.github.io//posts/perfecting-the-art-of-perfection/</link><guid isPermaLink="false">http://seung-jae.github.io//posts/perfecting-the-art-of-perfection/</guid><pubDate>Wed, 10 Jul 2019 23:46:37 GMT</pubDate><content:encoded>&lt;p&gt;(읽기 쉽고, 쉽게 표현하기 위해 경어를 사용한 점 양해부탁드립니다.)&lt;/p&gt;
 &lt;p&gt;며칠동안 전전긍긍하던 파이썬 로그인 데코레이터를 완료하였고, 구현하는 과정 및 결과에 대해 포스팅 해보려 한다. 개발을 배우는 입장에서 정리를 하다보니 부족한 부분이 있을 수 있으니 양해바란다.&lt;/p&gt;
 &lt;p&gt;&lt;img src=&quot;/media/image-2.jpg&quot; alt=&quot;Nulla faucibus vestibulum eros in tempus. Vestibulum tempor imperdiet velit nec dapibus&quot;&gt;&lt;/p&gt;
-&lt;p&gt;데코레이터 구현을 위해 인터넷을 계속 찾아다녀봤지만, pyJWT를 이용한 구현은 찾아보기가 힘들었고, 오늘 배운것을 정리하는 것과 pyJWT를 이용한 인증구현이 필요한 사람을 위해 정리하려 한다.  &lt;/p&gt;
-&lt;p&gt;JWT는&lt;br&gt;
+&lt;p&gt;데코레이터 구현을 위해 인터넷을 계속 찾아다녀봤지만, pyJWT를 이용한 구현은 찾아보기가 힘들었고, 오늘 배운것을 정리하는 것과 pyJWT를 통한 인증구현이 필요한 사람을 위해 정리하려 한다.  &lt;/p&gt;
+&lt;p&gt;먼저 JWT는,&lt;br&gt;
 JavaScript를 이용해 유저가 웹사이트에 로그인 한 후에 발생하는 이벤트(댓글, 게시판 글쓰기 등), 여러가지 서비스를 이용하기 위한 권한을 가진 유저인지 확인하기 위해서 많이 쓰이고 있다고 한다.
 총 3개의 구문으로 되어있고, 헤더.내용.서명 으로 이루어져 있다.
 (자세한 내용은 &lt;a href=&quot;https://jwt.io/&quot;&gt;JWT&lt;/a&gt;공식홈페이지나 다른 사이트를 참고해주길 바란다.)&lt;/p&gt;
 &lt;p&gt;혹여나 데코레이터가 뭔지 모르는 분들을 위해 설명드리자면,&lt;br&gt;
 대상 함수를 wrapping하고, 이 함수 앞뒤로 꾸며질 구문들에 대해 손쉽게 재사용할 수 있도록 다른 곳에 미리 함수를 만들어 둔 것이라고만 알고 있으면 될 듯 하다. 이번 프로젝트를 예로 들자면, 회원이 댓글작성이나 특정권한을 가지고 있는지 확인하기 위해 데코레이터를 구현했다.&lt;br&gt;
-사용예시&lt;/p&gt;
+ex)사용예시&lt;/p&gt;
 &lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;@decorator
 def comment:
   ~~~&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
@@ -28,36 +28,75 @@ def comment:
 &lt;li&gt;request할 객체에 user변수를 저장하여 프론트엔드에게 전달&lt;/li&gt;
 &lt;li&gt;위 내용이 잘 실행되는지 httpie나 다른 방법으로 테스트 및 검증진행&lt;/li&gt;
 &lt;/ol&gt;
+&lt;p&gt;더 자세한 사항은 코드 밑에 써두도록 하겠다.  &lt;/p&gt;
 &lt;h3 id=&quot;코딩-순서&quot;&gt;&lt;a href=&quot;#%EC%BD%94%EB%94%A9-%EC%88%9C%EC%84%9C&quot; aria-label=&quot;코딩 순서 permalink&quot; class=&quot;anchor&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;코딩 순서&lt;/h3&gt;
 &lt;p&gt;(세부로직 순서에 맞게 작성)&lt;/p&gt;
 &lt;ol start=&quot;0&quot;&gt;
 &lt;li&gt;pyJWT설치
 &lt;code class=&quot;language-text&quot;&gt;pip install pyJWT&lt;/code&gt; 및 django app디렉토리에서 utils.py 파일 생성&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;데코레이터 구현 및 해당 유저 정보 확인&lt;/p&gt;
+&lt;/ol&gt;
 &lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;def login_decorator(func):
-def wrapper(self, request, *args, **kwargs):
-if &amp;quot;Authorization&amp;quot; not in request.headers:
-  return JsonResponse({&amp;quot;error_code&amp;quot;:&amp;quot;INVALID_LOGIN&amp;quot;}, status=401)&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;=&gt; 데코레이터를 만들기 위해 다중 함수 구현, 받은 데이터 중에 토큰이 있는지 if문을 통해 확인
-=&gt; 401에러는 권한이 없을 때 발생&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;jwt토큰 decode
-&lt;code class=&quot;language-text&quot;&gt;data = jwt.decode(encode_token, secret_key, algorithm=&amp;#39;HS256&amp;#39;)&lt;/code&gt;&lt;br&gt;
+
+    def wrapper(self, request, *args, **kwargs): # self &amp;gt; 받아온 함수를 다시 넘긴다 access token이 헤더에 들어있음&amp;gt; json.load가 아님(헤더에 있는 값만 할 것임) &amp;gt; 키 벨류로 돼있는 양식 &amp;gt; 
+    
+        if &amp;quot;Authorization&amp;quot; not in request.headers: #1)번
+            return JsonResponse({&amp;quot;error_code&amp;quot;:&amp;quot;INVALID_LOGIN&amp;quot;}, status=401)
+        
+        encode_token = request.headers[&amp;quot;Authorization&amp;quot;] 
+
+        try:
+            data = jwt.decode(encode_token, wef_key, algorithm=&amp;#39;HS256&amp;#39;) 
+            #2번)decode를 하게 될 경우 프론트엔드에 전달했던 페이로드값만 나옴(즉 로그인뷰에 바디)
+
+            user = User.objects.get(id = data[&amp;quot;id&amp;quot;])#3번
+            request.user = user #4번
+        except jwt.DecodeError: #2-1번 error
+            return JsonResponse({
+                &amp;quot;error_code&amp;quot; : &amp;quot;INVALID_TOKEN&amp;quot;
+            }, status = 401) # 401에러 : 권한이 없을때 발생
+        except User.DoesNotExist:#1-1번 error
+            return JsonResponse({
+                &amp;quot;error_code&amp;quot; : &amp;quot;UNKNOWN_USER&amp;quot;
+            }, status = 401) # 401에러 : 권한이 없을때 발생
+
+        return func(self, request, *args, **kwargs) #5번
+
+    return wrapper&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;ol&gt;
+&lt;li&gt;데코레이터 구현 및 해당 유저 정보 확인
+=&gt; 데코레이터를 만들기 위해 다중 함수 구현, 받은 데이터 중에 토큰이 있는지 if문을 통해 확인
+=&gt; 401에러는 권한이 없을 때 발생&lt;/li&gt;
+&lt;li&gt;jwt토큰 decode&lt;br&gt;
 =&gt; 받은 토큰과 기존에 저장해두었던 SECRET_KEY와 algorithm으로 토큰을 decode
 =&gt; decode를 하게 될 경우 프론트엔드에 전달했던 페이로드값만 나옴(즉 로그인뷰에 바디)&lt;/li&gt;
 &lt;li&gt;decode한 토큰과 일치하는 유저 정보를 변수에 저장
-&lt;code class=&quot;language-text&quot;&gt;user = User.objects.get(id = data[&amp;quot;id&amp;quot;])&lt;/code&gt;
 =&gt;Query문을 이용해 DB에 접근하여 원하는 데이터를 가져온다
 =&gt;get메소드를 사용할 경우 DB에서 하나의 row만 가지고 옴(가로)&lt;/li&gt;
 &lt;li&gt;프론트엔드에게 받은 request.user에 3번의 자료 저장
-&lt;code class=&quot;language-text&quot;&gt;request.user = user&lt;/code&gt;
 =&gt;프론트엔드에게 전달해주기 전 준비과정&lt;/li&gt;
-&lt;li&gt;4번에 저장된 request를 데코레이터 리턴
-&lt;code class=&quot;language-text&quot;&gt;return func(self, request, *args, **kwargs)&lt;/code&gt;&lt;br&gt;
-&lt;code class=&quot;language-text&quot;&gt;return wrapper&lt;/code&gt;
+&lt;li&gt;4번에 저장된 request를 데코레이터 리턴&lt;br&gt;
 =&gt; 데코레이터종료 및 프론트엔드에게 해당 유저의 정보를 리턴&lt;/li&gt;
+&lt;li&gt;테스트할 변수를 views.py에 테스트변수 만들고, urls를 통해 url을 연결한 후  결과가 잘 나오는지 확인  &lt;/li&gt;
 &lt;/ol&gt;
+&lt;p&gt;&lt;code class=&quot;language-text&quot;&gt;pip install httpie&lt;/code&gt;
+=&gt;views.py에 아래 코드 입력, urls.py에 &lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;#user/views.py
+from user.utils import login_decorator  
+
+class Example(View):
+    @login_decorator
+    def get(self, request):
+        user = User.objects.get(id = 11)
+        return JsonResponse({
+            &amp;#39;user_name&amp;#39;    : user.name            
+        })
+
+#user/urls.py
+from .views import Example
+
+urlpatterns = [
+    path(&amp;#39;/a&amp;#39;, Example.as_view())
+    ]&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;h2 id=&quot;결론&quot;&gt;&lt;a href=&quot;#%EA%B2%B0%EB%A1%A0&quot; aria-label=&quot;결론 permalink&quot; class=&quot;anchor&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;결론&lt;/h2&gt;
 &lt;p&gt;어떻게 보면 정말 간단한 함수처럼 보이지만 이제 막 개발을 시작하거나 데코레이터를 실전(?)에서 어떻게 써야 하는지 위 자료를 토대로 조금이나마 도움이 됐으면 합니다.&lt;/p&gt;</content:encoded></item><item><title><![CDATA[gatsby 블로그를 위해 알아야 할 것(2)-마크다운언어]]></title><description><![CDATA[마크다운언어의 간단한 사용법]]></description><link>http://seung-jae.github.io//posts/markdownlanguage/</link><guid isPermaLink="false">http://seung-jae.github.io//posts/markdownlanguage/</guid><pubDate>Tue, 09 Jul 2019 22:12:03 GMT</pubDate><content:encoded>&lt;p&gt;(읽기 쉽고, 쉽게 표현하기 위해 경어를 사용한 점 양해부탁드립니다.)&lt;/p&gt;
 &lt;h2 id=&quot;gatsby-블로그-준비---2-마크다운언어&quot;&gt;&lt;a href=&quot;#gatsby-%EB%B8%94%EB%A1%9C%EA%B7%B8-%EC%A4%80%EB%B9%84---2-%EB%A7%88%ED%81%AC%EB%8B%A4%EC%9A%B4%EC%96%B8%EC%96%B4&quot; aria-label=&quot;gatsby 블로그 준비   2 마크다운언어 permalink&quot; class=&quot;anchor&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;Gatsby 블로그 준비 - 2 마크다운언어&lt;/h2&gt;
